@@ -1,0 +1,67 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.junit:junit-gradle:5.0.0-ALPHA'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.junit.gen5.gradle'
+
+jar {
+    baseName = 'junit5-gradle-consumer'
+    version = '1.0.0-SNAPSHOT'
+}
+ext.log4JVersion = '2.5'
+
+junit5 {
+    version '5.0.0-ALPHA'
+    runJunit4 true
+    matchClassName '.*Test'
+    reportsDir file('build/test-results/junit5/') // this is the default
+    logManager 'org.apache.logging.log4j.jul.LogManager'
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ["./"]
+            exclude "**/*Test.java"
+        }
+        resources {
+            srcDir 'resources'
+        }
+    }
+    test {
+        java {
+            srcDirs = ["./"]
+            include "**/*Test.java"
+        }
+        resources {
+            srcDir 'resources'
+        }
+    }
+}
+
+compileTestJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    options.compilerArgs += '-parameters'
+}
+
+dependencies {
+    testRuntime("org.apache.logging.log4j:log4j-core:${log4JVersion}")
+    testRuntime("org.apache.logging.log4j:log4j-jul:${log4JVersion}")
+}
+
+task wrapper(type: Wrapper) {
+    distributionUrl = 'https://services.gradle.org/distributions/gradle-2.12-all.zip'
+}
